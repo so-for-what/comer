@@ -39,29 +39,12 @@
 ## 安装依赖
 
 ```bash
-cd /home/scc/pb23050866
-
-# 创建 conda 环境
-conda create -y -n comer python=3.7
-conda activate comer
-
-# 安装 PyTorch
-conda install pytorch=1.8.1 torchvision=0.2.2 cudatoolkit=11.1 pillow=8.4.0 -c pytorch -c nvidia
-
-# 训练依赖
-conda install pytorch-lightning=1.4.9 torchmetrics=0.6.0 -c conda-forge
-
-# 评估依赖
-conda install pandoc=1.19.2.1 -c conda-forge
-
-# 安装项目包
-pip install -e .
-```
+为了避免大家需要调配环境，提供conda环境压缩包，将安装包解压。解压，配置方式可以问大模型。
 
 ## 训练
 
 ```bash
-python train.py fit --config config.yaml
+python train.py fit --config config.yaml //不太建议这样，最后按下文的方式
 ```
 
 在 4 张 NVIDIA 2080Ti 上训练约需 7-8 小时（ddp）。
