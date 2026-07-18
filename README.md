@@ -61,7 +61,7 @@ pip install -e .
 ## 训练
 
 ```bash
-python train.py --config config.yaml
+python train.py fit --config config.yaml
 ```
 
 在 4 张 NVIDIA 2080Ti 上训练约需 7-8 小时（ddp）。
