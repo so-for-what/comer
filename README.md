@@ -39,29 +39,24 @@
 ## 安装依赖
 
 ```bash
-cd /home/scc/pb23050866
+提供打包好的环境，方便使用
+链接：https://pan.ustc.edu.cn/share/index/15c255875b1647c9975e?p=1
+密码：tf7q
+有效期：2026-08-15 23:59:59
 
-# 创建 conda 环境
-conda create -y -n comer python=3.7
-conda activate comer
+得到.tar.gz文件后，类似于
+mkdir -p ~/miniconda3/envs/comer_env
+tar -xzf comer_env.tar.gz -C ~/miniconda3/envs/comer_env
+conda activate comer_env
+conda-unpack
 
-# 安装 PyTorch
-conda install pytorch=1.8.1 torchvision=0.2.2 cudatoolkit=11.1 pillow=8.4.0 -c pytorch -c nvidia
-
-# 训练依赖
-conda install pytorch-lightning=1.4.9 torchmetrics=0.6.0 -c conda-forge
-
-# 评估依赖
-conda install pandoc=1.19.2.1 -c conda-forge
-
-# 安装项目包
-pip install -e .
+具体平台上可能有调整，可以问问大模型
 ```
 
 ## 训练
 
 ```bash
-python train.py fit --config config.yaml
+见后面
 ```
 
 在 4 张 NVIDIA 2080Ti 上训练约需 7-8 小时（ddp）。
