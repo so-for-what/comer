@@ -72,11 +72,28 @@ conda-unpack
 nohup torchrun --nproc_per_node=4 train.py fit --config config.yaml > train.log 2>&1 &
 ```
 
+加载checkpoints,具体checkpoints路径，以及输出的文件名称train.log 2根据需要修改
+```bash
+nohup torchrun --nproc_per_node=4 train.py fit \
+    --config config.yaml \
+    --ckpt_path /home/scc/pb23050866/COMER/lightning_logs/version_23688/checkpoints/epoch=91-step=54924-val_ExpRate=0.5297.ckpt \
+    > train.log 2>&1 &
+```
+
 ### 测试时（前台运行）
 
 ```bash
 torchrun --nproc_per_node=4 train.py fit --config config.yaml
 ```
+加载checkpoints,具体checkpoints路径根据需要修改
+```bash
+torchrun --nproc_per_node=4 train.py fit \
+    --config config.yaml \
+    --ckpt_path /home/scc/pb23050866/COMER/lightning_logs/version_23688/checkpoints/epoch=91-step=54924-val_ExpRate=0.5297.ckpt
+```
+
+
+
 
 ### 多组训练
 
