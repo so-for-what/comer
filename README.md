@@ -39,15 +39,32 @@
 ## 安装依赖
 
 ```bash
-为了避免大家需要调配环境，提供conda环境压缩包，将安装包解压。解压，配置方式可以问大模型。
+cd /home/scc/pb23050866
+
+# 创建 conda 环境
+conda create -y -n comer python=3.7
+conda activate comer
+
+# 安装 PyTorch
+conda install pytorch=1.8.1 torchvision=0.2.2 cudatoolkit=11.1 pillow=8.4.0 -c pytorch -c nvidia
+
+# 训练依赖
+conda install pytorch-lightning=1.4.9 torchmetrics=0.6.0 -c conda-forge
+
+# 评估依赖
+conda install pandoc=1.19.2.1 -c conda-forge
+
+# 安装项目包
+pip install -e .
+```
 
 ## 训练
 
 ```bash
-python train.py fit --config config.yaml //不太建议这样，最后按下文的方式
+python train.py fit --config config.yaml
 ```
 
-在 4 张 NVIDIA RTX5090上，低精度高batchsize需要大概10小时，但是指标不如参考值。高精度预计要两倍时间，只能通过在启动命令时唤醒加载checkpoints，具体命令调整可以问大模型。
+在 4 张 NVIDIA 2080Ti 上训练约需 7-8 小时（ddp）。
 
 ### 长时间训练（后台运行）
 
@@ -83,7 +100,6 @@ tail -f train_experiment1.log
 - `torchrun --nproc_per_node=4` 表示使用 4 张 GPU 进行分布式训练
 - 如果是单卡训练，去掉 `--nproc_per_node` 参数直接用 `python train.py fit --config config.yaml`
 - 如需调整 GPU 数量，修改 `--nproc_per_node` 的值即可
-- 新手建议创建vscode应用，在vscode里训练，方便一点。
 
 ## 调整参数（显存/CPU 瓶颈）
 
@@ -139,4 +155,4 @@ tensorboard --logdir lightning_logs
 
 - CROHME 2014/2016/2019 数据集位于 `/home/scc/pb23050866/data/data/`
 - 压缩包 `data.zip` 也在项目根目录
-- 数据同已经在仓库中，不用单独获取
+- 数据同样未包含在仓库中，需单独获取
