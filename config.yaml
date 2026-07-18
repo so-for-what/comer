@@ -1,0 +1,108 @@
+# pytorch_lightning==1.9.5
+seed_everything: 7
+trainer:
+  logger: true
+  enable_checkpointing: true
+  callbacks:
+  - class_path: pytorch_lightning.callbacks.LearningRateMonitor
+    init_args:
+      logging_interval: epoch
+      log_momentum: false
+  - class_path: pytorch_lightning.callbacks.ModelCheckpoint
+    init_args:
+      dirpath: null
+      filename: '{epoch}-{step}-{val_ExpRate:.4f}'
+      monitor: val_ExpRate
+      verbose: false
+      save_last: null
+      save_top_k: 1
+      save_weights_only: false
+      mode: max
+      auto_insert_metric_name: true
+      every_n_train_steps: null
+      train_time_interval: null
+      every_n_epochs: null
+      save_on_train_epoch_end: null
+  default_root_dir: null
+  gradient_clip_val: null
+  gradient_clip_algorithm: null
+  num_nodes: 1
+  num_processes: null
+  #devices: null
+  devices: 4 
+  #gpus: 1
+  auto_select_gpus: null
+  tpu_cores: null
+  ipus: null
+  enable_progress_bar: true
+  overfit_batches: 0.0
+  track_grad_norm: -1
+  check_val_every_n_epoch: 2
+  fast_dev_run: false
+  accumulate_grad_batches: null
+  max_epochs: 300
+  min_epochs: null
+  max_steps: -1
+  min_steps: null
+  max_time: null
+  limit_train_batches: null
+  limit_val_batches: null
+  limit_test_batches: null
+  limit_predict_batches: null
+  val_check_interval: null
+  log_every_n_steps: 50
+  #accelerator: null
+  accelerator: 'gpu'
+  #strategy: null
+  strategy:
+    class_path: pytorch_lightning.strategies.DDPStrategy
+    init_args:
+      find_unused_parameters: false
+  sync_batchnorm: false
+  precision: 'bf16'  # 将 32 改为 'bf16'，回调精度
+  #precision: 32
+  enable_model_summary: true
+  num_sanity_val_steps: 2
+  resume_from_checkpoint: null
+  profiler: null
+  benchmark: null
+  deterministic: true
+  reload_dataloaders_every_n_epochs: 0
+  auto_lr_find: false
+  replace_sampler_ddp: true
+  detect_anomaly: false
+  auto_scale_batch_size: false
+  plugins: null
+  amp_backend: null
+  amp_level: null
+  move_metrics_to_cpu: false
+  multiple_trainloader_mode: max_size_cycle
+  inference_mode: true
+model:
+  d_model: 256
+  growth_rate: 24
+  num_layers: 16
+  nhead: 8
+  num_decoder_layers: 3
+  dim_feedforward: 1024
+  dropout: 0.3
+  dc: 32
+  cross_coverage: true
+  self_coverage: true
+  beam_size: 10
+  max_len: 200
+  alpha: 1.0
+  early_stopping: false
+  temperature: 1.0
+  learning_rate: 0.08
+  patience: 20
+data:
+  zipfile_path: data.zip
+  test_year: '2014'
+  train_batch_size: 16
+  eval_batch_size: 1
+  num_workers: 2
+  scale_aug: true
+optimizer: null
+lr_scheduler: null
+ckpt_path: null
