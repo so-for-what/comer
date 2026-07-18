@@ -1,123 +1,151 @@
-# CoMER: Modeling Coverage for Transformer-based Handwritten Mathematical Expression Recognition
+# CoMER: 基于覆盖机制的 Transformer 手写数学公式识别
 
 [![arXiv](https://img.shields.io/badge/arXiv-2207.04410-b31b1b.svg)](https://arxiv.org/abs/2207.04410)
 
-## Project structure
+## 项目结构（集群路径）
 
 ```
-scc/  (集群根目录 /home/scc/pb23050866/)
-├── comer/                     # model definition folder
-├── convert2symLG/             # official tool to convert latex to symLG format
-├── lgeval/                    # official tool to compare symLGs in two folder
-├── config.yaml                # config for CoMER hyperparameters
+/home/scc/pb23050866/
+├── comer/                     # 模型定义代码包
+├── convert2symLG/             # LaTeX 转 symLG 格式工具
+├── lgeval/                    # symLG 对比评估工具（CROHME 官方）
+├── config.yaml                # CoMER 超参数配置文件
 ├── config.yaml.bak
 ├── data/
-│   └── data/                  # CROHME training data (2014, 2016, 2019, train)
-├── data.zip                   # compressed data archive
-├── eval_all.sh                # script to evaluate model on all CROHME test sets
+│   └── data/                  # CROHME 训练数据（2014, 2016, 2019, train）
+├── data.zip                   # 数据压缩包
+├── eval_all.sh                # 全 CROHME 测试集评估脚本
 ├── example/
 │   ├── UN19_1041_em_595.bmp
-│   └── example.ipynb          # HMER demo
-├── lightning_logs/            # training logs
+│   └── example.ipynb          # HMER 演示
+├── lightning_logs/            # 训练日志 & checkpoints
 │   ├── version_0/
 │   ├── version_23528/
 │   └── version_23573/
-├── logs/                      # sbatch job logs (stdout/stderr)
-├── material/                  # reference materials
-├── scripts/                   # evaluation scripts
+├── logs/                      # sbatch 作业日志（stdout/stderr）
+├── material/                  # 参考资料
+├── scripts/                   # 评估脚本
 ├── requirements.txt
 ├── setup.cfg
 ├── setup.py
 ├── train.py
-├── run_comer.sbatch           # sbatch job script for Slurm
-├── run_comer2.sbatch          # updated sbatch job script
-├── comer_p107.sbatch          # P107-RTX5090 partition sbatch
+├── run_comer.sbatch           # Slurm 作业提交脚本
+├── run_comer2.sbatch
+├── comer_p107.sbatch          # P107-RTX5090 分区专用脚本
 ├── test_gpu.sbatch
 └── .gitignore
 ```
 
-## Install dependencies
+## 安装依赖
 
 ```bash
 cd /home/scc/pb23050866
 
-# create conda environment
+# 创建 conda 环境
 conda create -y -n comer python=3.7
 conda activate comer
 
-# install PyTorch
+# 安装 PyTorch
 conda install pytorch=1.8.1 torchvision=0.2.2 cudatoolkit=11.1 pillow=8.4.0 -c pytorch -c nvidia
 
-# training dependencies
+# 训练依赖
 conda install pytorch-lightning=1.4.9 torchmetrics=0.6.0 -c conda-forge
 
-# evaluation dependencies
+# 评估依赖
 conda install pandoc=1.19.2.1 -c conda-forge
 
-# install project
+# 安装项目包
 pip install -e .
 ```
 
-## Training
-
-Navigate to project root and run:
+## 训练
 
 ```bash
 python train.py --config config.yaml
 ```
 
-Training takes ~7-8 hours on 4x NVIDIA 2080Ti GPUs using ddp.
+在 4 张 NVIDIA 2080Ti 上训练约需 7-8 小时（ddp）。
 
-Set different models by editing `config.yaml`:
+通过修改 `config.yaml` 切换不同模型：
 
-- **BTTR (baseline)**: `cross_coverage: false, self_coverage: false`
-- **CoMER(Self)**: `cross_coverage: false, self_coverage: true`
-- **CoMER(Cross)**: `cross_coverage: true, self_coverage: false`
-- **CoMER(Fusion)**: `cross_coverage: true, self_coverage: true`
+- **BTTR（基线）**：`cross_coverage: false, self_coverage: false`
+- **CoMER(Self)**：`cross_coverage: false, self_coverage: true`
+- **CoMER(Cross)**：`cross_coverage: true, self_coverage: false`
+- **CoMER(Fusion)**：`cross_coverage: true, self_coverage: true`
 
-For single GPU, set `gpus: 1` in config.yaml.
+单卡训练：在 config.yaml 中设置 `gpus: 1`。
 
-## Training on USTC 107 Cluster (Slurm)
+## USTC 107 集群训练（Slurm）
 
-The cluster uses Slurm job scheduler. Submit training jobs via sbatch:
+使用 sbatch 提交训练任务：
 
 ```bash
 sbatch run_comer.sbatch
 ```
 
-Available partitions:
-- **P107-RTX5090** (RTX 5090, Blackwell sm_120)
-- **P107-A100** (A100 80GB)
+可用分区：
+- **P107-RTX5090**（RTX 5090, Blackwell sm_120）
+- **P107-A100**（A100 80GB）
 
-See the sbatch scripts for configuration details (`comer_p107.sbatch`, `run_comer.sbatch`).
+具体配置见 sbatch 脚本（`comer_p107.sbatch`, `run_comer.sbatch`）。
 
-**⚠️ Important notes:**
-- PyTorch 2.10.0+ required for RTX 5090 (sm_120)
-- Install with: `pip install torch==2.13.0 torchvision --index-url https://download.pytorch.org/whl/cu130 --no-deps`
-- The login node (tradmin-02) has no GPU — always submit to compute nodes
+**⚠️ 注意事项：**
+- RTX 5090（sm_120）需要 PyTorch 2.10.0+
+- 安装命令：`pip install torch==2.13.0 torchvision --index-url https://download.pytorch.org/whl/cu130 --no-deps`
+- 登录节点（tradmin-02）**没有 GPU**，必须提交到计算节点运行
 
-## Evaluation
+## 调整参数（显存/CPU 瓶颈）
 
-Use the official CROHME 2019 evaluation tools:
+见 `config.yaml` 约第 102 行：
+
+```yaml
+train_batch_size: 16    # 显存不够时减小
+eval_batch_size: 1
+num_workers: 2           # CPU 瓶颈时减小
+```
+
+精度调整，`config.yaml` 约第 62 行：
+
+```yaml
+precision: 'bf16'   # 将 32 改为 bf16 可显著减少显存占用
+```
+
+`torch.set_float32_matmul_precision('medium')`，位于 `train.py` 约第 7 行。
+
+图片尺寸过滤，`comer/datamodule/datamodule.py` 约第 18 行：
+
+```python
+MAX_SIZE = 1.6e5  # 超过此像素数的图片会被跳过
+```
+
+过大图片会挤占显存，可酌情调整此阈值。
+
+## 评估
+
+使用 CROHME 2019 官方工具进行评估：
 
 ```bash
-perl --version  # ensure Perl 5 is installed
+perl --version  # 需要 Perl 5
 unzip -q data.zip
 bash eval_all.sh 0
 ```
 
-A trained CoMER(Fusion) checkpoint is saved in `lightning_logs/version_0/`.
+预训练的 CoMER(Fusion) checkpoint 位于 `lightning_logs/version_0/`。
 
 ## Checkpoints
 
-Checkpoints are stored in `/home/scc/pb23050866/lightning_logs/`. View training curves with TensorBoard:
+checkpoints 保存在 `/home/scc/pb23050866/lightning_logs/`。用 TensorBoard 查看训练曲线：
 
 ```bash
 tensorboard --logdir lightning_logs
 ```
 
-## Data
+每个 checkpoint 约 50MB，训练约 150 个 epoch 即可收敛。
 
-- CROHME 2014/2016/2019 datasets at `/home/scc/pb23050866/data/data/`
-- Data is also available as `data.zip` at the project root
-- Training converges around ~150 epochs
+由于体积较大，checkpoints 未包含在此仓库中，可以从集群直接获取或自行训练。
+
+## 数据
+
+- CROHME 2014/2016/2019 数据集位于 `/home/scc/pb23050866/data/data/`
+- 压缩包 `data.zip` 也在项目根目录
+- 数据同样未包含在仓库中，需单独获取
