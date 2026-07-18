@@ -47,7 +47,7 @@
 python train.py fit --config config.yaml //不太建议这样，最后按下文的方式
 ```
 
-在 4 张 NVIDIA 2080Ti 上训练约需 7-8 小时（ddp）。
+在 4 张 NVIDIA RTX5090上，低精度高batchsize需要大概10小时，但是指标不如参考值。高精度预计要两倍时间，只能通过在启动命令时唤醒加载checkpoints，具体命令调整可以问大模型。
 
 ### 长时间训练（后台运行）
 
