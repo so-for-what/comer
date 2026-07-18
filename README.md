@@ -100,34 +100,6 @@ tail -f train_experiment1.log
 - `torchrun --nproc_per_node=4` 表示使用 4 张 GPU 进行分布式训练
 - 如果是单卡训练，去掉 `--nproc_per_node` 参数直接用 `python train.py fit --config config.yaml`
 - 如需调整 GPU 数量，修改 `--nproc_per_node` 的值即可
-
-通过修改 `config.yaml` 切换不同模型：
-
-- **BTTR（基线）**：`cross_coverage: false, self_coverage: false`
-- **CoMER(Self)**：`cross_coverage: false, self_coverage: true`
-- **CoMER(Cross)**：`cross_coverage: true, self_coverage: false`
-- **CoMER(Fusion)**：`cross_coverage: true, self_coverage: true`
-
-单卡训练：在 config.yaml 中设置 `gpus: 1`。
-
-## USTC 107 集群训练（Slurm）
-
-使用 sbatch 提交训练任务：
-
-```bash
-sbatch run_comer.sbatch
-```
-
-可用分区：
-- **P107-RTX5090**（RTX 5090, Blackwell sm_120）
-- **P107-A100**（A100 80GB）
-
-具体配置见 sbatch 脚本（`comer_p107.sbatch`, `run_comer.sbatch`）。
-
-**⚠️ 注意事项：**
-- RTX 5090（sm_120）需要 PyTorch 2.10.0+
-- 安装命令：`pip install torch==2.13.0 torchvision --index-url https://download.pytorch.org/whl/cu130 --no-deps`
-- 登录节点（tradmin-02）**没有 GPU**，必须提交到计算节点运行
 - 新手建议创建vscode应用，在vscode里训练，方便一点。
 
 ## 调整参数（显存/CPU 瓶颈）
@@ -184,4 +156,4 @@ tensorboard --logdir lightning_logs
 
 - CROHME 2014/2016/2019 数据集位于 `/home/scc/pb23050866/data/data/`
 - 压缩包 `data.zip` 也在项目根目录
-- 数据同样未包含在仓库中，需单独获取
+- 数据同已经在仓库中，不用单独获取
