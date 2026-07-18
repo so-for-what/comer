@@ -38,7 +38,7 @@
 
 ## 安装依赖
 环境针对本科生算力平台的RTX5090，建议创建vscode应用。如果之前没有申请107杯，应用最长时间只能是12小时。配置如下：
-![配置截图](instruction_to_107/parameter.png)
+![配置截图](instuction_to_107/parameter.png)
 
 
 
